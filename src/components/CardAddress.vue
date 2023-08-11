@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div class="card mx-3 mb-5">
     <div class="card-header">
       <h3 class="highlight p-2 mb-0 text-center">CEP: 12345-678</h3>
     </div>

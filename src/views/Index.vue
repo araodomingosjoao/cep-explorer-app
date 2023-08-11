@@ -17,16 +17,40 @@ const addresses = reactive([
     neighborhood: "Bairro Outro Exemplo",
     state: "RJ",
   },
+  {
+    cep: "98765-432",
+    city: "Rio de Janeiro",
+    neighborhood: "Bairro Outro Exemplo",
+    state: "RJ",
+  },
+  {
+    cep: "98765-432",
+    city: "Rio de Janeiro",
+    neighborhood: "Bairro Outro Exemplo",
+    state: "RJ",
+  },
+  {
+    cep: "98765-432",
+    city: "Rio de Janeiro",
+    neighborhood: "Bairro Outro Exemplo",
+    state: "RJ",
+  },
+  {
+    cep: "98765-432",
+    city: "Rio de Janeiro",
+    neighborhood: "Bairro Outro Exemplo",
+    state: "RJ",
+  },
 ]);
 </script>
 
 <template>
-  <div class="container bg-dark">
+  <div class="container mt-5">
     <div class="row mb-5">
       <InputFilter />
       <AddAddress />
     </div>
-    <div class="bg-primary w-100 d-flex justify-content-between">
+    <div class="w-100 d-flex justify-content-center flex-wrap">
       <CardAddress v-for="(address, index) in addresses" :key="index" />
     </div>
   </div>

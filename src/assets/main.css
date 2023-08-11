@@ -1,21 +1,6 @@
 body {
-  font-family: 'Open Sans', sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
   margin: 0;
   background-color: #f7f7f7;
-}
-
-body {
-  font-family: 'Open Sans', sans-serif;
-  background-color: #f7f7f7;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
 }
 
 .filter {
