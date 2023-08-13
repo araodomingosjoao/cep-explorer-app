@@ -1,6 +1,5 @@
 <script setup>
 import { reactive } from 'vue';
-import { mask } from 'vue-the-mask';
 import axios from 'axios';
 
 var data = reactive({
@@ -32,7 +31,9 @@ const validate = async () => {
     errors.cep = 'O campo cep é obrigatório';
   }
 
-  if (data.cep != '' && data.cep && data.cep > 88888888) {
+  const cepPattern = /^\d{5}-\d{3}$/; // Expressão regular para o formato XXXXX-XXX
+
+  if (data.cep != '' && !cepPattern.test(data.cep)) {
     errors.cep = 'O campo cep deve cumprir o formato XXXXX-XXX';
   }
 
@@ -58,11 +59,13 @@ const create = async () => {
 
   validate();
 
-  await axios
-    .post('/api/v1/addrress', data)
-    .then((response) => {
-      console.log(response);
-    });
+  if (!Object.values(errors).some(error => error !== '')) {
+    await axios
+      .post('/api/v1/addrress', data)
+      .then((response) => {
+        console.log(response);
+      });
+  }
 };
 </script>
 
@@ -86,8 +89,8 @@ const create = async () => {
             <div class="row">
               <div class="col-md-12 mb-3">
                 <label for="cep" class="col-form-label">CEP:</label>
-                <input type="number" class="form-control" :class="{ 'is-invalid': errors.cep }" id="cep"
-                  v-model="data.cep" v-mask="'#####-###'" min="0" required>
+                <input type="text" class="form-control" :class="{ 'is-invalid': errors.cep }" id="cep" v-model="data.cep"
+                  v-mask="'#####-###'" min="0" required>
                 <div class="invalid-feedback">
                   {{ errors.cep }}
                 </div>

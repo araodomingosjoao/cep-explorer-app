@@ -3,7 +3,6 @@ import { reactive, onMounted, ref } from 'vue';
 import axios from 'axios';
 import swal from 'sweetalert';
 import { Modal } from 'bootstrap'
-import { mask } from 'vue-the-mask';
 
 const props = defineProps({
   address: Object,
@@ -33,14 +32,16 @@ const cleanAttribute = () => {
 };
 
 const validate = async () => {
-  
+
   cleanAttribute();
 
   if (dataForm.value.cep === '') {
     errors.cep = 'O campo cep é obrigatório';
   }
 
-  if (dataForm.value.cep != '' && dataForm.value.cep && dataForm.value.cep > 88888888) {
+  const cepPattern = /^\d{5}-\d{3}$/; // Expressão regular para o formato XXXXX-XXX
+
+  if (data.cep != '' && !cepPattern.test(data.cep)) {
     errors.cep = 'O campo cep deve cumprir o formato XXXXX-XXX';
   }
 
@@ -145,8 +146,8 @@ onMounted(() => {
             <div class="row">
               <div class="col-md-12 mb-3">
                 <label for="cep" class="col-form-label">CEP: {{ dataForm.value }}</label>
-                <input type="text" class="form-control" :class="{ 'is-invalid': errors.cep }" id="cep" v-model="dataForm.cep"
-                  v-mask="'#####-###'" min="0" required>
+                <input type="text" class="form-control" :class="{ 'is-invalid': errors.cep }" id="cep"
+                  v-model="dataForm.cep" v-mask="'#####-###'" min="0" required>
                 <div class="invalid-feedback">
                   {{ errors.cep }}
                 </div>
@@ -169,7 +170,8 @@ onMounted(() => {
               </div>
               <div class="col-md-4 mb-3">
                 <label for="uf" class="col-form-label">Estado:</label>
-                <input type="text" class="form-control" :class="{ 'is-invalid': errors.uf }" id="uf" v-model="dataForm.uf">
+                <input type="text" class="form-control" :class="{ 'is-invalid': errors.uf }" id="uf"
+                  v-model="dataForm.uf">
                 <div class="invalid-feedback">
                   {{ errors.uf }}
                 </div>
