@@ -9,37 +9,43 @@ const addresses = reactive([
     cep: "12345-678",
     city: "São Paulo",
     neighborhood: "Bairro Exemplo",
-    state: "SP",
+    uf: "SP",
+    street: "Zona Azul",
   },
   {
     cep: "98765-432",
     city: "Rio de Janeiro",
     neighborhood: "Bairro Outro Exemplo",
-    state: "RJ",
+    uf: "RJ",
+    street: "Zona Azul",
   },
   {
     cep: "98765-432",
     city: "Rio de Janeiro",
     neighborhood: "Bairro Outro Exemplo",
-    state: "RJ",
+    uf: "RJ",
+    street: "Zona Azul",
   },
   {
     cep: "98765-432",
     city: "Rio de Janeiro",
     neighborhood: "Bairro Outro Exemplo",
-    state: "RJ",
+    uf: "RJ",
+    street: "Zona Azul",
   },
   {
     cep: "98765-432",
     city: "Rio de Janeiro",
     neighborhood: "Bairro Outro Exemplo",
-    state: "RJ",
+    uf: "RJ",
+    street: "Zona Azul",
   },
   {
     cep: "98765-432",
     city: "Rio de Janeiro",
     neighborhood: "Bairro Outro Exemplo",
-    state: "RJ",
+    uf: "RJ",
+    street: "Zona Azul",
   },
 ]);
 </script>
@@ -51,7 +57,7 @@ const addresses = reactive([
       <AddAddress />
     </div>
     <div class="w-100 d-flex justify-content-center flex-wrap">
-      <CardAddress v-for="(address, index) in addresses" :key="index" />
+      <CardAddress v-for="(address, index) in addresses" :key="index" :address="address" />
     </div>
   </div>
 </template>
