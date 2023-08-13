@@ -2,52 +2,32 @@
 import InputFilter from "@/components/InputFilter.vue";
 import AddAddress from "@/components/AddAddress.vue";
 import CardAddress from "@/components/CardAddress.vue";
-import { reactive } from "vue";
+import CardPlaceholder from "@/components/CardPlaceholder.vue";
 
-const addresses = reactive([
-  {
-    cep: "12345-678",
-    city: "São Paulo",
-    neighborhood: "Bairro Exemplo",
-    uf: "SP",
-    street: "Zona Azul",
-  },
-  {
-    cep: "98765-432",
-    city: "Rio de Janeiro",
-    neighborhood: "Bairro Outro Exemplo",
-    uf: "RJ",
-    street: "Zona Azul",
-  },
-  {
-    cep: "98765-432",
-    city: "Rio de Janeiro",
-    neighborhood: "Bairro Outro Exemplo",
-    uf: "RJ",
-    street: "Zona Azul",
-  },
-  {
-    cep: "98765-432",
-    city: "Rio de Janeiro",
-    neighborhood: "Bairro Outro Exemplo",
-    uf: "RJ",
-    street: "Zona Azul",
-  },
-  {
-    cep: "98765-432",
-    city: "Rio de Janeiro",
-    neighborhood: "Bairro Outro Exemplo",
-    uf: "RJ",
-    street: "Zona Azul",
-  },
-  {
-    cep: "98765-432",
-    city: "Rio de Janeiro",
-    neighborhood: "Bairro Outro Exemplo",
-    uf: "RJ",
-    street: "Zona Azul",
-  },
-]);
+import { reactive, onMounted, ref } from "vue";
+import axios from "@/helpers/axios"
+
+let addresses = reactive([]);
+
+const state = reactive({
+  isLoading: false  
+})
+
+const getAddress = async () => {
+  state.isLoading = true
+  await axios
+    .get('/v1/address')
+    .then((response) => {
+      console.log(response);
+      addresses = Object.assign(addresses, response?.data?.data)
+      state.isLoading = false
+    });
+};
+
+onMounted(async () => {
+  await getAddress();
+})
+
 </script>
 
 <template>
@@ -56,8 +36,11 @@ const addresses = reactive([
       <InputFilter />
       <AddAddress />
     </div>
-    <div class="w-100 d-flex justify-content-center flex-wrap">
-      <CardAddress v-for="(address, index) in addresses" :key="index" :address="address" />
+    <div class="w-100 d-flex justify-content-center flex-wrap" v-if="!state.isLoading">
+      <CardAddress v-for="(address, index) in addresses" :key="index" :address="address" @removed="getAddress" />
+    </div>
+    <div class="w-100 d-flex justify-content-center flex-wrap" v-else>
+      <CardPlaceholder v-for="(address, index) in 6" :key="index"/>
     </div>
   </div>
 </template>

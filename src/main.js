@@ -9,6 +9,7 @@ import 'font-awesome/css/font-awesome.css';
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+
 import VueTheMask from 'vue-the-mask'
 
 import App from './App.vue'

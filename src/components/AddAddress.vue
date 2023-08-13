@@ -1,13 +1,19 @@
 <script setup>
-import { reactive } from 'vue';
-import axios from 'axios';
+import { reactive, onMounted } from 'vue';
+import { Modal } from 'bootstrap'
+
+import swal from 'sweetalert';
+import axios from "@/helpers/axios"
+
+const emit = defineEmits(['removed'])
+
+let myModal = reactive({})
 
 var data = reactive({
   cep: '',
   city: '',
   street: '',
   uf: '',
-  complement: '',
   neighborhood: '',
 });
 
@@ -19,12 +25,34 @@ var errors = reactive({
   neighborhood: '',
 })
 
+const state = reactive({
+  isLoading: false  
+})
+
+const closeModal = () => {
+  myModal.hide()
+  cleanAttribute();
+};
+
+const cleanAttribute = () => {
+  errors.cep = '';
+  errors.city = '';
+  errors.street = '';
+  errors.uf = '';
+  errors.neighborhood = '';
+
+  data.cep = '';
+  data.city = '';
+  data.street = '';
+  data.uf = '';
+  data.neighborhood = '';
+};
+
 const validate = async () => {
   errors.cep = '';
   errors.city = '';
   errors.street = '';
   errors.uf = '';
-  errors.complement = '';
   errors.neighborhood = '';
 
   if (data.cep === '') {
@@ -56,17 +84,28 @@ const validate = async () => {
 };
 
 const create = async () => {
-
   validate();
-
   if (!Object.values(errors).some(error => error !== '')) {
+    state.isLoading = true
     await axios
-      .post('/api/v1/addrress', data)
+      .post('/v1/address', data)
       .then((response) => {
         console.log(response);
+        state.isLoading = false
+        swal("Endereço cadastrado!", "Seu endereço foi cadastrado com sucesso!", "success")
+        .then((resSwal) => {
+          if (resSwal) {
+            emit('removed')
+            closeModal()
+          }
+        });
       });
   }
 };
+
+onMounted(() => {
+  myModal = new Modal('#staticBackdrop')
+})
 </script>
 
 <template>
@@ -81,8 +120,8 @@ const create = async () => {
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="staticBackdropLabel">Cadastrar CEP</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Cadastrar Endereço</h1>
+          <button type="button" class="btn-close" @click="closeModal"></button>
         </div>
         <div class="modal-body">
           <form class="g-3 needs-validation" novalidate>
@@ -95,7 +134,7 @@ const create = async () => {
                   {{ errors.cep }}
                 </div>
               </div>
-              <div class="col-md-4 mb-3">
+              <div class="col-md-6 mb-3">
                 <label for="city" class="col-form-label">Cidade:</label>
                 <input type="text" class="form-control" :class="{ 'is-invalid': errors.city }" id="city"
                   v-model="data.city">
@@ -103,7 +142,7 @@ const create = async () => {
                   {{ errors.city }}
                 </div>
               </div>
-              <div class="col-md-4 mb-3">
+              <div class="col-md-6 mb-3">
                 <label for="street" class="col-form-label">Bairro:</label>
                 <input type="text" class="form-control" :class="{ 'is-invalid': errors.street }" id="street"
                   v-model="data.street">
@@ -118,11 +157,7 @@ const create = async () => {
                   {{ errors.uf }}
                 </div>
               </div>
-              <div class="col-md-6 mb-3">
-                <label for="complement" class="col-form-label">Complemento:</label>
-                <input type="text" class="form-control" id="complement" v-model="data.complement">
-              </div>
-              <div class="col-md-6 mb-3">
+              <div class="col-md-8 mb-3">
                 <label for="neighborhood" class="col-form-label">Lougradouro:</label>
                 <input type="text" class="form-control" :class="{ 'is-invalid': errors.neighborhood }" id="neighborhood"
                   v-model="data.neighborhood">
@@ -134,9 +169,16 @@ const create = async () => {
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"> <i class="fa fa-xmark"></i>
-            Cancelar</button>
-          <button type="button" class="btn btn-primary" @click="create()"> <i class="fa fa-save"></i> Salvar</button>
+          <div v-if="!state.isLoading"> 
+            <button type="button" class="btn btn-secondary mx-2" @click="closeModal"> <i class="fa fa-xmark"></i>
+              Cancelar</button>
+            <button type="button" class="btn btn-primary" @click="create()"> <i class="fa fa-save"></i> Salvar</button>
+          </div>
+          <div v-else>
+            <button type="button" class="btn btn-secondary mx-2" disabled> <i class="fa fa-xmark"></i>
+              Cancelar</button>
+            <button type="button" class="btn btn-primary disabled" disabled> <i class="fa fa-save"></i> Salvando...</button>
+          </div>
         </div>
       </div>
     </div>

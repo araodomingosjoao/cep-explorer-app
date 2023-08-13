@@ -1,18 +1,32 @@
 <script setup>
 import { reactive, onMounted, ref } from 'vue';
-import axios from 'axios';
-import swal from 'sweetalert';
 import { Modal } from 'bootstrap'
+
+import axios from "@/helpers/axios"
+import swal from 'sweetalert';
 
 const props = defineProps({
   address: Object,
+})
+
+const emit = defineEmits(['removed'])
+
+const state = reactive({
+  isLoading: false
 })
 
 let myModal = reactive({})
 
 var data = props.address
 
-var dataForm = ref({})
+// Objeto de dados reativo para o form
+const dataForm = ref({
+  cep: '',
+  city: '',
+  street: '',
+  uf: '',
+  neighborhood: '',
+});
 
 var errors = reactive({
   cep: '',
@@ -27,65 +41,79 @@ const cleanAttribute = () => {
   errors.city = '';
   errors.street = '';
   errors.uf = '';
-  errors.complement = '';
   errors.neighborhood = '';
+
+  dataForm.cep = '';
+  dataForm.city = '';
+  dataForm.street = '';
+  dataForm.uf = '';
+  dataForm.neighborhood = '';
 };
 
 const validate = async () => {
 
   cleanAttribute();
 
-  if (dataForm.value.cep === '') {
+  if (dataForm.cep === '') {
     errors.cep = 'O campo cep é obrigatório';
   }
 
   const cepPattern = /^\d{5}-\d{3}$/; // Expressão regular para o formato XXXXX-XXX
 
-  if (data.cep != '' && !cepPattern.test(data.cep)) {
+  if (dataForm.cep != '' && !cepPattern.test(dataForm.cep)) {
     errors.cep = 'O campo cep deve cumprir o formato XXXXX-XXX';
   }
 
-  if (dataForm.value.city === '') {
+  if (dataForm.city === '') {
     errors.city = 'O campo cidade é obrigatório.';
   }
 
-  if (dataForm.value.street === '') {
+  if (dataForm.street === '') {
     errors.street = 'O campo bairro é obrigatório.';
   }
 
-  if (dataForm.value.uf === '') {
+  if (dataForm.uf === '') {
     errors.uf = 'O campo uf é obrigatório.';
   }
 
-  if (dataForm.value.neighborhood === '') {
+  if (dataForm.neighborhood === '') {
     errors.neighborhood = 'O campo lougradouro é obrigatório.';
   }
 
 };
 
 const openModal = (data) => {
-  myModal.show()
   localStorage.setItem('address', JSON.stringify(data))
-  // Object.assign(dataForm.value , JSON.parse(localStorage.getItem('address')))
-  dataForm.value = JSON.parse(localStorage.getItem('address'))
+  // dataForm = Object.assign(dataForm, JSON.parse(localStorage.getItem('address')))
+  dataForm.value = Object.assign(dataForm.value, data);
   console.log("ff", dataForm.value);
+  myModal.show()
 };
 
 const closeModal = () => {
-  myModal.hide()
   cleanAttribute();
-  localStorage.removeItem('address')
+  // localStorage.removeItem('address')
+  myModal.hide()
 };
 
 const update = async () => {
 
   validate();
 
-  if (!Object.values(errors).some(error => error !== '')) {
+  if (!Objects(errors).some(error => error !== '')) {
+    state.isLoading = true
     await axios
-      .post('/api/v1/addrress', data)
+      .put(`/v1/address/${dataForm.id}`)
       .then((response) => {
         console.log(response);
+        state.isLoading = false
+        swal("Endereço editado com sucesso", {
+          icon: 'success'
+        }).then((resSwal) => {
+            if (resSwal) {
+              closeModal()
+            }
+          })
       });
   }
 };
@@ -93,16 +121,26 @@ const update = async () => {
 const remove = (data) => {
   swal({
     title: "Tens a certeza?",
-    text: "Uma vez excluído, você não será capaz de recuperar este endereço!",
     icon: "warning",
     buttons: true,
     dangerMode: true,
   })
-    .then((willDelete) => {
+    .then(async (willDelete) => {
       if (willDelete) {
-        swal("Poof! Endereço foi excluído!", {
-          icon: "success",
-        });
+        await axios
+          .delete(`/v1/address/${data.id}`)
+          .then((response) => {
+            console.log(response);
+            state.isLoading = false
+            swal("Poof! Endereço removido com sucesso!", {
+              icon: "success",
+            }).then((resSwal) => {
+              if (resSwal) {
+                emit('removed')
+                closeModal()
+              }
+            });
+          });
       }
     });
 };
@@ -119,14 +157,15 @@ onMounted(() => {
     </div>
     <div class="card-body">
       <p>Cidade: {{ data?.city }}</p>
+      <p>Estado: {{ data?.uf }}</p>
       <p>Bairro: {{ data?.street }}</p>
       <p>Lougradouro: {{ data?.neighborhood }}</p>
       <div class="actions">
         <button class="btn btn-secondary" @click="openModal(data)">
-          <i class="fas fa-pencil-alt"></i> Editar
+          <i class="fas fa-pencil-alt"></i>
         </button>
         <button class="btn btn-danger" @click="remove(data)">
-          <i class="fas fa-trash-alt"></i> Remover
+          <i class="fas fa-trash-alt"></i>
         </button>
       </div>
     </div>
@@ -138,7 +177,7 @@ onMounted(() => {
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="editAddressModalLabel">Cadastrar Endereço</h1>
+          <h1 class="modal-title fs-5" id="editAddressModalLabel">Editar Endereço</h1>
           <button type="button" class="btn-close" @click="closeModal"></button>
         </div>
         <div class="modal-body">
@@ -152,7 +191,7 @@ onMounted(() => {
                   {{ errors.cep }}
                 </div>
               </div>
-              <div class="col-md-4 mb-3">
+              <div class="col-md-6 mb-3">
                 <label for="city" class="col-form-label">Cidade:</label>
                 <input type="text" class="form-control" :class="{ 'is-invalid': errors.city }" id="city"
                   v-model="dataForm.city">
@@ -160,7 +199,7 @@ onMounted(() => {
                   {{ errors.city }}
                 </div>
               </div>
-              <div class="col-md-4 mb-3">
+              <div class="col-md-6 mb-3">
                 <label for="street" class="col-form-label">Bairro:</label>
                 <input type="text" class="form-control" :class="{ 'is-invalid': errors.street }" id="street"
                   v-model="dataForm.street">
@@ -176,11 +215,7 @@ onMounted(() => {
                   {{ errors.uf }}
                 </div>
               </div>
-              <div class="col-md-6 mb-3">
-                <label for="complement" class="col-form-label">Complemento:</label>
-                <input type="text" class="form-control" id="complement" v-model="dataForm.complement">
-              </div>
-              <div class="col-md-6 mb-3">
+              <div class="col-md-8 mb-3">
                 <label for="neighborhood" class="col-form-label">Lougradouro:</label>
                 <input type="text" class="form-control" :class="{ 'is-invalid': errors.neighborhood }" id="neighborhood"
                   v-model="dataForm.neighborhood">
@@ -192,9 +227,17 @@ onMounted(() => {
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" @click="closeModal"> <i class="fa fa-xmark"></i>
-            Cancelar</button>
-          <button type="button" class="btn btn-primary" @click="update()"> <i class="fa fa-save"></i> Salvar</button>
+          <div v-if="!state.isLoading">
+            <button type="button" class="btn btn-secondary mx-2" @click="closeModal"> <i class="fa fa-xmark"></i>
+              Cancelar</button>
+            <button type="button" class="btn btn-primary" @click="update()"> <i class="fa fa-save"></i> Editar</button>
+          </div>
+          <div v-else>
+            <button type="button" class="btn btn-secondary mx-2" disabled> <i class="fa fa-xmark"></i>
+              Cancelar</button>
+            <button type="button" class="btn btn-primary disabled" disabled> <i class="fa fa-save"></i>
+              Editando...</button>
+          </div>
         </div>
       </div>
     </div>
