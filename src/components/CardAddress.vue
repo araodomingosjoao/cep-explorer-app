@@ -17,10 +17,12 @@ const state = reactive({
 
 let myModal = reactive({})
 
-var data = props.address
+var data = reactive({})
+
+data = props.address
 
 // Objeto de dados reativo para o form
-const dataForm = ref({
+var dataForm = reactive({
   cep: '',
   city: '',
   street: '',
@@ -43,40 +45,36 @@ const cleanAttribute = () => {
   errors.uf = '';
   errors.neighborhood = '';
 
-  dataForm.cep = '';
-  dataForm.city = '';
-  dataForm.street = '';
-  dataForm.uf = '';
-  dataForm.neighborhood = '';
+  dataForm = {}
 };
 
 const validate = async () => {
 
   cleanAttribute();
 
-  if (dataForm.cep === '') {
+  if (dataForm.value.cep === '') {
     errors.cep = 'O campo cep é obrigatório';
   }
 
   const cepPattern = /^\d{5}-\d{3}$/; // Expressão regular para o formato XXXXX-XXX
 
-  if (dataForm.cep != '' && !cepPattern.test(dataForm.cep)) {
+  if (dataForm.value.cep != '' && !cepPattern.test(dataForm.value.cep)) {
     errors.cep = 'O campo cep deve cumprir o formato XXXXX-XXX';
   }
 
-  if (dataForm.city === '') {
+  if (dataForm.value.city === '') {
     errors.city = 'O campo cidade é obrigatório.';
   }
 
-  if (dataForm.street === '') {
+  if (dataForm.value.street === '') {
     errors.street = 'O campo bairro é obrigatório.';
   }
 
-  if (dataForm.uf === '') {
+  if (dataForm.value.uf === '') {
     errors.uf = 'O campo uf é obrigatório.';
   }
 
-  if (dataForm.neighborhood === '') {
+  if (dataForm.value.neighborhood === '') {
     errors.neighborhood = 'O campo lougradouro é obrigatório.';
   }
 
@@ -85,8 +83,8 @@ const validate = async () => {
 const openModal = (data) => {
   localStorage.setItem('address', JSON.stringify(data))
   // dataForm = Object.assign(dataForm, JSON.parse(localStorage.getItem('address')))
-  dataForm.value = Object.assign(dataForm.value, data);
-  console.log("ff", dataForm.value);
+  dataForm = Object.assign(dataForm, data);
+  console.log("ff", dataForm);
   myModal.show()
 };
 
@@ -100,7 +98,7 @@ const update = async () => {
 
   validate();
 
-  if (!Objects(errors).some(error => error !== '')) {
+  if (!Object(errors).some(error => error !== '')) {
     state.isLoading = true
     await axios
       .put(`/v1/address/${dataForm.id}`)
@@ -184,7 +182,7 @@ onMounted(() => {
           <form class="g-3 needs-validation" novalidate>
             <div class="row">
               <div class="col-md-12 mb-3">
-                <label for="cep" class="col-form-label">CEP: {{ dataForm.value }}</label>
+                <label for="cep" class="col-form-label">CEP: {{ dataForm }}</label>
                 <input type="text" class="form-control" :class="{ 'is-invalid': errors.cep }" id="cep"
                   v-model="dataForm.cep" v-mask="'#####-###'" min="0" required>
                 <div class="invalid-feedback">

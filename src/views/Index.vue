@@ -4,7 +4,7 @@ import AddAddress from "@/components/AddAddress.vue";
 import CardAddress from "@/components/CardAddress.vue";
 import CardPlaceholder from "@/components/CardPlaceholder.vue";
 
-import { reactive, onMounted, ref } from "vue";
+import { reactive, onMounted, ref, onBeforeUpdate } from "vue";
 import axios from "@/helpers/axios"
 
 let addresses = reactive([]);
@@ -14,11 +14,11 @@ const state = reactive({
 })
 
 const getAddress = async () => {
+  addresses = []
   state.isLoading = true
   await axios
     .get('/v1/address')
     .then((response) => {
-      console.log(response);
       addresses = Object.assign(addresses, response?.data?.data)
       state.isLoading = false
     });
@@ -27,14 +27,13 @@ const getAddress = async () => {
 onMounted(async () => {
   await getAddress();
 })
-
 </script>
 
 <template>
   <div class="container mt-5">
     <div class="row mb-5">
       <InputFilter />
-      <AddAddress />
+      <AddAddress @removed="getAddress" />
     </div>
     <div class="w-100 d-flex justify-content-center flex-wrap" v-if="!state.isLoading">
       <CardAddress v-for="(address, index) in addresses" :key="index" :address="address" @removed="getAddress" />
@@ -42,5 +41,6 @@ onMounted(async () => {
     <div class="w-100 d-flex justify-content-center flex-wrap" v-else>
       <CardPlaceholder v-for="(address, index) in 6" :key="index"/>
     </div>
+    
   </div>
 </template>
