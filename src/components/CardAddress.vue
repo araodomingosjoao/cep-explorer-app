@@ -1,120 +1,25 @@
 <script setup>
 import { reactive, onMounted, ref } from 'vue';
-import { Modal } from 'bootstrap'
 
 import axios from "@/helpers/axios"
 import swal from 'sweetalert';
 
 const props = defineProps({
   address: Object,
+  openModal: {
+    type: Function
+  }
 })
 
-const emit = defineEmits(['removed'])
+const emit = defineEmits(['removed', 'edit'])
 
 const state = reactive({
   isLoading: false
 })
 
-let myModal = reactive({})
-
 var data = reactive({})
 
 data = props.address
-
-// Objeto de dados reativo para o form
-var dataForm = reactive({
-  cep: '',
-  city: '',
-  street: '',
-  uf: '',
-  neighborhood: '',
-});
-
-var errors = reactive({
-  cep: '',
-  city: '',
-  street: '',
-  uf: '',
-  neighborhood: '',
-})
-
-const cleanAttribute = () => {
-  errors.cep = '';
-  errors.city = '';
-  errors.street = '';
-  errors.uf = '';
-  errors.neighborhood = '';
-
-  dataForm = {}
-};
-
-const validate = async () => {
-
-  cleanAttribute();
-
-  if (dataForm.value.cep === '') {
-    errors.cep = 'O campo cep é obrigatório';
-  }
-
-  const cepPattern = /^\d{5}-\d{3}$/; // Expressão regular para o formato XXXXX-XXX
-
-  if (dataForm.value.cep != '' && !cepPattern.test(dataForm.value.cep)) {
-    errors.cep = 'O campo cep deve cumprir o formato XXXXX-XXX';
-  }
-
-  if (dataForm.value.city === '') {
-    errors.city = 'O campo cidade é obrigatório.';
-  }
-
-  if (dataForm.value.street === '') {
-    errors.street = 'O campo bairro é obrigatório.';
-  }
-
-  if (dataForm.value.uf === '') {
-    errors.uf = 'O campo uf é obrigatório.';
-  }
-
-  if (dataForm.value.neighborhood === '') {
-    errors.neighborhood = 'O campo lougradouro é obrigatório.';
-  }
-
-};
-
-const openModal = (data) => {
-  localStorage.setItem('address', JSON.stringify(data))
-  // dataForm = Object.assign(dataForm, JSON.parse(localStorage.getItem('address')))
-  dataForm = Object.assign(dataForm, data);
-  console.log("ff", dataForm);
-  myModal.show()
-};
-
-const closeModal = () => {
-  cleanAttribute();
-  // localStorage.removeItem('address')
-  myModal.hide()
-};
-
-const update = async () => {
-
-  validate();
-
-  if (!Object(errors).some(error => error !== '')) {
-    state.isLoading = true
-    await axios
-      .put(`/v1/address/${dataForm.id}`)
-      .then((response) => {
-        console.log(response);
-        state.isLoading = false
-        swal("Endereço editado com sucesso", {
-          icon: 'success'
-        }).then((resSwal) => {
-            if (resSwal) {
-              closeModal()
-            }
-          })
-      });
-  }
-};
 
 const remove = (data) => {
   swal({
@@ -142,10 +47,6 @@ const remove = (data) => {
       }
     });
 };
-
-onMounted(() => {
-  myModal = new Modal('#editAddressModal')
-})
 </script>
 
 <template>
@@ -159,7 +60,7 @@ onMounted(() => {
       <p>Bairro: {{ data?.street }}</p>
       <p>Lougradouro: {{ data?.neighborhood }}</p>
       <div class="actions">
-        <button class="btn btn-secondary" @click="openModal(data)">
+        <button class="btn btn-secondary" @click="props.openModal(data)">
           <i class="fas fa-pencil-alt"></i>
         </button>
         <button class="btn btn-danger" @click="remove(data)">
@@ -170,7 +71,7 @@ onMounted(() => {
   </div>
 
   <!-- Modal -->
-  <div class="modal fade" id="editAddressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  <!-- <div class="modal fade" id="editAddressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="editAddressModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -239,5 +140,5 @@ onMounted(() => {
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>

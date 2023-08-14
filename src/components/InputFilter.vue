@@ -6,7 +6,7 @@ const emit = defineEmits(['filter'])
 
 const state = reactive({
   isLoading: false,
-  isCEP: false,
+  isNeighborhood: false,
 })
 
 const filterData = reactive({
@@ -16,7 +16,7 @@ const filterData = reactive({
 
 const filter = async () => {
   state.isLoading = true
-  filterData.option = state.isCEP ? 'cep' : 'neighborhood'
+  filterData.option = state.isNeighborhood ? 'neighborhood' : 'cep'
   emit('filter', filterData)
 };
 
@@ -26,18 +26,19 @@ const changeValue = () => {
 </script>
 
 <template>
+
+  
   <div class="col-md-11">
     <div class="input-group">
       <div class="col-sm-2 mx-3">
         <label class="visually-hidden" for="specificSizeSelect">Preference</label>
-        <select class="form-select" id="specificSizeSelect" v-model="state.isCEP" @input="changeValue">
-          <option selected>Selecione</option>
-          <option :value="1">CEP</option>
-          <option :value="0">Lougradouro</option>
+        <select class="form-select" id="specificSizeSelect" v-model="state.isNeighborhood" @input="changeValue">
+          <option :value="1">Lougradouro</option>
+          <option :value="0">CEP</option>
         </select>
       </div>
-      <input type="text" class="form-control" v-model="filterData.search" placeholder="Filtrar" v-mask="'#####-###'" v-if="state.isCEP"/>
-      <input type="text" class="form-control" v-model="filterData.search" placeholder="Filtrar" v-else/>
+      <input type="text" class="form-control" v-model="filterData.search" placeholder="Filtrar" v-if="state.isNeighborhood"/>
+      <input type="text" class="form-control" v-model="filterData.search" placeholder="Filtrar" v-mask="'#####-###'" v-else/>
       <button class="btn btn-primary" type="button" @click="filter">
         <i class="fas fa-search"></i>
       </button>
