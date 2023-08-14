@@ -49,7 +49,6 @@ const addressFiltred = async (filterData) => {
   await axios
     .get(`/v1/address?${filterData.option}=${filterData.search}`)
     .then((response) => {
-      console.log(response);
       addresses = Object.assign(addresses, response?.data?.data);
       state.isLoading = false;
     });
@@ -67,7 +66,6 @@ const update = async () => {
   ) {
     state.isLoadingForm = true;
     await axios.put(`/v1/address/${editForm.id}`, editForm).then((response) => {
-      console.log(response);
       state.isLoadingForm = false;
       swal("Endereço editado com sucesso", {
         icon: "success",

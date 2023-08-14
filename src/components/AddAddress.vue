@@ -90,7 +90,6 @@ const create = async () => {
     await axios
       .post('/v1/address', data)
       .then((response) => {
-        console.log(response);
         state.isLoading = false
         swal("Endereço cadastrado!", "Seu endereço foi cadastrado com sucesso!", "success")
         .then((resSwal) => {
