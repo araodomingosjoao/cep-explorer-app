@@ -27,56 +27,6 @@ npm install
 # ou
 yarn install
 ```
-
-## Rodando a Aplicação
-
-4. Inicie o servidor de desenvolvimento:
-
-```
-npm run dev
-# ou
-yarn serve
-```
-
-5. Acesse a aplicação no seu navegador:
-
-```
-http://localhost:5173/
-```
-
-Claro! Aqui está o README atualizado com uma seção explicando que é necessário rodar o backend Laravel antes de rodar a aplicação Vue:
-
-```markdown
-# Aplicação Vue 3 de Gerenciamento de Endereços
-
-Esta é uma aplicação Vue 3 simples para gerenciamento de endereços utilizando o Bootstrap 5.
-
-## Pré-requisitos
-
-Certifique-se de ter o Node.js e o npm (ou yarn) instalados em seu sistema.
-
-## Configuração
-
-1. Clone este repositório:
-
-```
-git clone https://github.com/seu-usuario/seu-repositorio.git
-```
-
-2. Navegue para a pasta do projeto:
-
-```
-cd seu-repositorio
-```
-
-3. Instale as dependências:
-
-```
-npm install
-# ou
-yarn install
-```
-
 ## Rodando a Aplicação
 
 **Importante: Antes de rodar a aplicação Vue, é necessário rodar o backend Laravel que irá fornecer os dados. Certifique-se de seguir as instruções de instalação e execução do backend.**
@@ -84,15 +34,15 @@ yarn install
 4. Inicie o servidor de desenvolvimento:
 
 ```
-npm run serve
+npm run dev
 # ou
-yarn serve
+yarn dev
 ```
 
 5. Acesse a aplicação no seu navegador:
 
 ```
-http://localhost:8080/
+http://localhost:5173/
 ```
 
 ## Executando o Backend Laravel
