@@ -24,6 +24,18 @@ const getAddress = async () => {
     });
 };
 
+const addressFiltred = async (filterData) => {
+  addresses = []
+  state.isLoading = true
+  await axios
+    .get(`/v1/address?${filterData.option}=${filterData.search}`)
+    .then((response) => {
+      console.log(response);
+      addresses = Object.assign(addresses, response?.data?.data)
+      state.isLoading = false
+    });
+};
+
 onMounted(async () => {
   await getAddress();
 })
@@ -32,7 +44,7 @@ onMounted(async () => {
 <template>
   <div class="container mt-5">
     <div class="row mb-5">
-      <InputFilter />
+      <InputFilter @filter="addressFiltred"/>
       <AddAddress @removed="getAddress" />
     </div>
     <div class="w-100 d-flex justify-content-center flex-wrap" v-if="!state.isLoading">
@@ -41,6 +53,6 @@ onMounted(async () => {
     <div class="w-100 d-flex justify-content-center flex-wrap" v-else>
       <CardPlaceholder v-for="(address, index) in 6" :key="index"/>
     </div>
-    
+
   </div>
 </template>
