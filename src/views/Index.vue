@@ -140,8 +140,8 @@ onMounted(async () => {
 <template>
   <div class="container mt-5">
     <div class="row mb-5">
-      <InputFilter @filter="addressFiltred" />
-      <AddAddress @removed="getAddress" />
+      <div class="col-md-11 col-10"><InputFilter @filter="addressFiltred" /></div>
+      <div class="col-md-1 col-2"><AddAddress @removed="getAddress" /></div>
     </div>
     <div
       class="w-100 d-flex justify-content-center flex-wrap"
@@ -186,7 +186,7 @@ onMounted(async () => {
               <div class="row">
                 <div class="col-md-12 mb-3">
                   <label for="cep" class="col-form-label"
-                    >CEP: {{ editForm }}</label
+                    >CEP:</label
                   >
                   <input
                     type="text"

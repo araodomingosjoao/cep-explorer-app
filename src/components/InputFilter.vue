@@ -28,9 +28,9 @@ const changeValue = () => {
 <template>
 
   
-  <div class="col-md-11">
+  <div class="row col-md-11">
     <div class="input-group">
-      <div class="col-sm-2 mx-3">
+      <div class="col-4 col-md-2 mx-2">
         <label class="visually-hidden" for="specificSizeSelect">Preference</label>
         <select class="form-select" id="specificSizeSelect" v-model="state.isNeighborhood" @input="changeValue">
           <option :value="1">Lougradouro</option>
