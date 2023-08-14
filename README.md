@@ -1,6 +1,3 @@
-Claro! Aqui está um exemplo de arquivo README com instruções sobre como rodar a sua aplicação Vue 3:
-
-```markdown
 # Aplicação Vue 3 de Gerenciamento de Endereços
 
 Esta é uma aplicação Vue 3 simples para gerenciamento de endereços utilizando o Bootstrap 5.
